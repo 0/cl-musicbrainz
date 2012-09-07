@@ -2,17 +2,33 @@
 
 ;;;; MusicBrainz resource interface.
 
-(defun mb-browse (resource filter-resource mbid &key incs)
+(defun mb-browse (resource filter-resource mbid &key incs type status)
+  "Browse the assocated resources of a resource.
+
+If a list of incs is given, those are included in the result. The type and
+status of some incs may be optionally restricted."
   (let ((args (list (cons (format nil "~(~a~)" filter-resource)
                           mbid))))
     (when incs
       (setf args (cons (cons "inc"
                              (join-incs incs))
                        args)))
+    (when type
+      (setf args (cons (cons "type"
+                             (format nil "~(~a~)" type))
+                       args)))
+    (when status
+      (setf args (cons (cons "status"
+                             (format nil "~(~a~)" status))
+                       args)))
     (ws-request (make-url resource)
                 args)))
 
-(defun mb-lookup (resource mbid &key incs type)
+(defun mb-lookup (resource mbid &key incs type status)
+  "Look up a resource by MBID.
+
+If a list of incs is given, those are included in the result. The type and
+status of some incs may be optionally restricted."
   (let ((args '()))
     (when incs
       (setf args (cons (cons "inc"
@@ -22,10 +38,15 @@
       (setf args (cons (cons "type"
                              (format nil "~(~a~)" type))
                        args)))
+    (when status
+      (setf args (cons (cons "status"
+                             (format nil "~(~a~)" status))
+                       args)))
     (ws-request (make-url resource mbid)
                 args)))
 
 (defun mb-search (resource query)
+  "Get a page of search results."
   (ws-request (make-url resource)
               (list (cons "query" query))))
 

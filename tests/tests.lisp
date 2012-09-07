@@ -8,7 +8,7 @@
 
 (test test-browse
   (let ((release-results
-          (cl-musicbrainz:mb-browse :release :label "1d8f304b-be39-489f-b7a9-9ed86cd4f7f7")))
+          (cl-musicbrainz:mb-browse 'release 'label "1d8f304b-be39-489f-b7a9-9ed86cd4f7f7")))
     (is (plusp (cl-musicbrainz:release-list-count release-results)))
     (is (plusp (length (cl-musicbrainz:release-list-releases release-results))))))
 
@@ -16,7 +16,7 @@
 
 (test test-lookup
   (let ((artist-metadata
-          (cl-musicbrainz:mb-lookup :artist "67f66c07-6e61-4026-ade5-7e782fad3a5d")))
+          (cl-musicbrainz:mb-lookup 'artist "67f66c07-6e61-4026-ade5-7e782fad3a5d")))
     (is (equal "67f66c07-6e61-4026-ade5-7e782fad3a5d"
                (cl-musicbrainz:artist-id artist-metadata)))
     (is (equal "Foo Fighters"
@@ -32,7 +32,7 @@
 
 (test test-search
   (let ((artist-results
-          (cl-musicbrainz:mb-search :artist "foo")))
+          (cl-musicbrainz:mb-search 'artist "foo")))
     (is (plusp (cl-musicbrainz:artist-list-count artist-results)))
     (is (plusp (length (cl-musicbrainz:artist-list-artists artist-results))))))
 
