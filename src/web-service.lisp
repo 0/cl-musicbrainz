@@ -15,6 +15,9 @@
 (defparameter *ws-delay* 1.1
   "Mandatory delay, in seconds, between successive requests.")
 
+(defparameter *ws-per-page* 25
+  "Number of results per page for paginated requests.")
+
 (defvar *last-request-time* 0
   "current-seconds value at the last request.")
 

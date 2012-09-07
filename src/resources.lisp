@@ -2,13 +2,17 @@
 
 ;;;; MusicBrainz resource interface.
 
-(defun mb-browse (resource filter-resource mbid &key incs type status)
+(defun mb-browse (resource filter-resource mbid &key incs type status (page-offset 0))
   "Browse the assocated resources of a resource.
 
 If a list of incs is given, those are included in the result. The type and
-status of some incs may be optionally restricted."
+status of some incs may be optionally restricted.
+
+The second returned value is the function to call for the next page of results."
   (let ((args (list (cons (format nil "~(~a~)" filter-resource)
-                          mbid))))
+                          mbid)
+                    (cons "limit" (format nil "~a" *ws-per-page*))
+                    (cons "offset" (format nil "~a" (* page-offset *ws-per-page*))))))
     (when incs
       (setf args (cons (cons "inc"
                              (join-incs incs))
@@ -21,8 +25,13 @@ status of some incs may be optionally restricted."
       (setf args (cons (cons "status"
                              (format nil "~(~a~)" status))
                        args)))
-    (ws-request (make-url resource)
-                args)))
+    (values
+      (ws-request (make-url resource)
+                  args)
+      (lambda ()
+        (mb-browse resource filter-resource mbid
+                   :incs incs
+                   :page-offset (1+ page-offset))))))
 
 (defun mb-lookup (resource mbid &key incs type status)
   "Look up a resource by MBID.
@@ -45,10 +54,18 @@ status of some incs may be optionally restricted."
     (ws-request (make-url resource mbid)
                 args)))
 
-(defun mb-search (resource query)
-  "Get a page of search results."
-  (ws-request (make-url resource)
-              (list (cons "query" query))))
+(defun mb-search (resource query &key (page-offset 0))
+  "Get a page of search results.
+
+The second returned value is the function to call for the next page of results."
+  (values
+    (ws-request (make-url resource)
+                (list (cons "query" query)
+                      (cons "limit" (format nil "~a" *ws-per-page*))
+                      (cons "offset" (format nil "~a" (* page-offset *ws-per-page*)))))
+    (lambda ()
+      (mb-search resource query
+                 :page-offset (1+ page-offset)))))
 
 ;;;; Common Lisp resource interface.
 

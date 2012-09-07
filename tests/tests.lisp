@@ -31,10 +31,16 @@
 ;;; search
 
 (test test-search
-  (let ((artist-results
-          (cl-musicbrainz:mb-search 'artist "foo")))
-    (is (plusp (cl-musicbrainz:artist-list-count artist-results)))
-    (is (plusp (length (cl-musicbrainz:artist-list-artists artist-results))))))
+  (multiple-value-bind (results more)
+      (cl-musicbrainz:mb-search 'artist "the")
+    (let ((count (cl-musicbrainz:artist-list-count results)))
+      (is (plusp count))
+      (is (plusp (length (cl-musicbrainz:artist-list-artists results))))
+      (multiple-value-bind (results more)
+          (funcall more)
+        (declare (ignore more))
+        (is (= count (cl-musicbrainz:artist-list-count results)))
+        (is (plusp (length (cl-musicbrainz:artist-list-artists results))))))))
 
 ;;;; utils
 
