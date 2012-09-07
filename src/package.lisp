@@ -1,6 +1,7 @@
 (defpackage #:cl-musicbrainz
   (:use #:cl)
-  (:export #:mb-browse
+  (:export #:*user-agent*
+           #:mb-browse
            #:mb-lookup
            #:mb-search
            #:artist-id
