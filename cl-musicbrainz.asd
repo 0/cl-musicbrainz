@@ -18,7 +18,8 @@
                         :serial t
                         :components
                         ((:file "suite")
-                         (:file "tests")))))
+                         (:file "utils")
+                         (:file "resources")))))
 
 (defmethod asdf:perform ((op asdf:test-op)
                          (system (eql (asdf:find-system 'cl-musicbrainz))))
