@@ -50,7 +50,7 @@ Returns the same multiple values as drakma:http-request."
           (ws-make-request url parameters)))
     (declare (ignore headers uri))
     (setf *last-request-time* (current-seconds))
-    (setf *ws-stream* (unless must-close stream))
+    (setf *ws-stream* (if must-close nil stream))
     (if (= 200 status-code)
       body
       (error (format nil "HTTP status ~A: ~A" status-code reason-phrase)))))
@@ -64,8 +64,8 @@ Returns the same multiple values as drakma:http-request."
   (anaphora:aif (xmls:parse (ws-get-response url parameters))
     (if (equal "metadata" (xmls:node-name anaphora:it))
       (car (xmls:xmlrep-children anaphora:it))
-      (error "Response is not metadata"))
-    (error "Could not parse XML")))
+      (error "Response is not metadata."))
+    (error "Could not parse XML.")))
 
 (defun make-url (resource &optional mbid)
   "Generate the URL for a web service request."
