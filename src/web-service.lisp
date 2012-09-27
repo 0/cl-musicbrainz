@@ -1,4 +1,4 @@
-(in-package #:cl-musicbrainz)
+(in-package cl-musicbrainz)
 
 ;;;; XML web service interface.
 

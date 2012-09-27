@@ -1,8 +1,8 @@
-(asdf:defsystem #:cl-musicbrainz
+(asdf:defsystem cl-musicbrainz
   :version "0.0.1"
-  :depends-on (#:anaphora
-               #:drakma
-               #:xmls)
+  :depends-on (anaphora
+               drakma
+               xmls)
   :components ((:module "src"
                         :serial t
                         :components
@@ -11,9 +11,9 @@
                          (:file "web-service")
                          (:file "resources")))))
 
-(asdf:defsystem #:cl-musicbrainz-test
-  :depends-on (#:cl-musicbrainz
-               #:eos)
+(asdf:defsystem cl-musicbrainz-test
+  :depends-on (cl-musicbrainz
+               eos)
   :components ((:module "tests"
                         :serial t
                         :components
@@ -21,6 +21,6 @@
                          (:file "tests")))))
 
 (defmethod asdf:perform ((op asdf:test-op)
-                         (system (eql (asdf:find-system '#:cl-musicbrainz))))
-  (asdf:oos 'asdf:load-op '#:cl-musicbrainz)
-  (asdf:oos 'asdf:test-op '#:cl-musicbrainz-test))
+                         (system (eql (asdf:find-system 'cl-musicbrainz))))
+  (asdf:oos 'asdf:load-op 'cl-musicbrainz)
+  (asdf:oos 'asdf:test-op 'cl-musicbrainz-test))

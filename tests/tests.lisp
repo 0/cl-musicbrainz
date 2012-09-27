@@ -1,4 +1,4 @@
-(in-package #:cl-musicbrainz-test)
+(in-package cl-musicbrainz-test)
 
 (in-suite cl-musicbrainz)
 

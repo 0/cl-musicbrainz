@@ -1,4 +1,4 @@
-(in-package #:cl-musicbrainz)
+(in-package cl-musicbrainz)
 
 ;;;; Miscellaneous utilities.
 
