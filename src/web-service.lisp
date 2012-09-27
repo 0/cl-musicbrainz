@@ -6,7 +6,7 @@
   "Current version of the package.")
 
 (defparameter *user-agent*
-  (format nil "~(~a~)/~a" (package-name *package*) *version*)
+  (format nil "~(~A~)/~A" (package-name *package*) *version*)
   "User agent string sent to the server.")
 
 (defparameter *base-url* "http://musicbrainz.org/ws/2/"
@@ -53,7 +53,7 @@ Returns the same multiple values as drakma:http-request."
     (setf *ws-stream* (unless must-close stream))
     (if (= 200 status-code)
       body
-      (error (format nil "HTTP status ~a: ~a" status-code reason-phrase)))))
+      (error (format nil "HTTP status ~A: ~A" status-code reason-phrase)))))
 
 (defun ws-request (url parameters)
   "Talk to the web service."
@@ -69,12 +69,12 @@ Returns the same multiple values as drakma:http-request."
 
 (defun make-url (resource &optional mbid)
   "Generate the URL for a web service request."
-  (format nil "~a~(~a~)~@[/~a~]"
+  (format nil "~A~(~A~)~@[/~A~]"
           *base-url* resource mbid))
 
 (defun join-incs (incs)
   "Create a string representing all the incs."
-  (format nil "~{~(~a~)~^+~}"
+  (format nil "~{~(~A~)~^+~}"
           incs))
 ;;;; MusicBrainz resource interface.
 
@@ -85,16 +85,16 @@ If a list of incs is given, those are included in the result. The type and
 status of some incs may be optionally restricted.
 
 The second returned value is the function to call for the next page of results."
-  (let ((args (list (cons (format nil "~(~a~)" filter-resource)
+  (let ((args (list (cons (format nil "~(~A~)" filter-resource)
                           mbid)
-                    (cons "limit" (format nil "~a" *ws-per-page*))
-                    (cons "offset" (format nil "~a" (* page-offset *ws-per-page*))))))
+                    (cons "limit" (format nil "~A" *ws-per-page*))
+                    (cons "offset" (format nil "~A" (* page-offset *ws-per-page*))))))
     (when incs
       (push (cons "inc" (join-incs incs)) args))
     (when type
-      (push (cons "type" (format nil "~(~a~)" type)) args))
+      (push (cons "type" (format nil "~(~A~)" type)) args))
     (when status
-      (push (cons "status" (format nil "~(~a~)" status)) args))
+      (push (cons "status" (format nil "~(~A~)" status)) args))
     (values
       (ws-request (make-url resource)
                   args)
@@ -114,9 +114,9 @@ status of some incs may be optionally restricted."
     (when incs
       (push (cons "inc" (join-incs incs)) args))
     (when type
-      (push (cons "type" (format nil "~(~a~)" type)) args))
+      (push (cons "type" (format nil "~(~A~)" type)) args))
     (when status
-      (push (cons "status" (format nil "~(~a~)" status)) args))
+      (push (cons "status" (format nil "~(~A~)" status)) args))
     (ws-request (make-url resource mbid)
                 args)))
 
@@ -127,8 +127,8 @@ The second returned value is the function to call for the next page of results."
   (values
     (ws-request (make-url resource)
                 (list (cons "query" query)
-                      (cons "limit" (format nil "~a" *ws-per-page*))
-                      (cons "offset" (format nil "~a" (* page-offset *ws-per-page*)))))
+                      (cons "limit" (format nil "~A" *ws-per-page*))
+                      (cons "offset" (format nil "~A" (* page-offset *ws-per-page*)))))
     (lambda ()
       (mb-search resource query
                  :page-offset (1+ page-offset)))))
