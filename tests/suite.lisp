@@ -5,6 +5,11 @@
 
 (in-package cl-musicbrainz-test)
 
+;; Add a package nickname to make tests more concise.
+(let ((p (find-package 'cl-musicbrainz)))
+  (rename-package p (package-name p)
+                  (cons 'mb (package-nicknames p))))
+
 (def-suite cl-musicbrainz)
 
 (defun run-tests ()
