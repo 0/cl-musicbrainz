@@ -76,3 +76,59 @@ Returns the same multiple values as drakma:http-request."
   "Create a string representing all the incs."
   (format nil "~{~(~a~)~^+~}"
           incs))
+;;;; MusicBrainz resource interface.
+
+(defun mb-browse (resource filter-resource mbid &key incs type status (page-offset 0))
+  "Browse the assocated resources of a resource.
+
+If a list of incs is given, those are included in the result. The type and
+status of some incs may be optionally restricted.
+
+The second returned value is the function to call for the next page of results."
+  (let ((args (list (cons (format nil "~(~a~)" filter-resource)
+                          mbid)
+                    (cons "limit" (format nil "~a" *ws-per-page*))
+                    (cons "offset" (format nil "~a" (* page-offset *ws-per-page*))))))
+    (when incs
+      (push (cons "inc" (join-incs incs)) args))
+    (when type
+      (push (cons "type" (format nil "~(~a~)" type)) args))
+    (when status
+      (push (cons "status" (format nil "~(~a~)" status)) args))
+    (values
+      (ws-request (make-url resource)
+                  args)
+      (lambda ()
+        (mb-browse resource filter-resource mbid
+                   :incs incs
+                   :type type
+                   :status status
+                   :page-offset (1+ page-offset))))))
+
+(defun mb-lookup (resource mbid &key incs type status)
+  "Look up a resource by MBID.
+
+If a list of incs is given, those are included in the result. The type and
+status of some incs may be optionally restricted."
+  (let ((args '()))
+    (when incs
+      (push (cons "inc" (join-incs incs)) args))
+    (when type
+      (push (cons "type" (format nil "~(~a~)" type)) args))
+    (when status
+      (push (cons "status" (format nil "~(~a~)" status)) args))
+    (ws-request (make-url resource mbid)
+                args)))
+
+(defun mb-search (resource query &key (page-offset 0))
+  "Get a page of search results.
+
+The second returned value is the function to call for the next page of results."
+  (values
+    (ws-request (make-url resource)
+                (list (cons "query" query)
+                      (cons "limit" (format nil "~a" *ws-per-page*))
+                      (cons "offset" (format nil "~a" (* page-offset *ws-per-page*)))))
+    (lambda ()
+      (mb-search resource query
+                 :page-offset (1+ page-offset)))))
