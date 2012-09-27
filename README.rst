@@ -8,6 +8,8 @@ Development
 
 At this point, it is more of a sketch than a finished product, though it does work. Bug reports and patches are welcome.
 
+This is only tested using `SBCL <http://www.sbcl.org/>`_.
+
 License
 =======
 
