@@ -1,16 +1,26 @@
 (defpackage cl-musicbrainz
   (:use cl)
-  (:export *user-agent*
-           mb-browse
-           mb-lookup
-           mb-search
-           artist-id
+  (:export ;; Web service.
+           *user-agent*
+           ;; Resources.
+           browse-resource
+           lookup-resource
+           search-resource
+           ;; Artist.
+           artist-mbid
            artist-name
            artist-type
-           artist-score
            artist-date-span
-           artist-list-count
-           artist-list-artists
-           release-list-count
-           release-list-releases
+           ;; Release.
+           release-mbid
+           release-title
+           release-status
+           release-date
+           release-country
+           ;; Release group.
+           release-group-mbid
+           release-group-title
+           release-group-type
+           release-group-first-release-date
+           release-group-primary-type
            ))

@@ -76,6 +76,16 @@ Returns the same multiple values as drakma:http-request."
   "Create a string representing all the incs."
   (format nil "~{~(~A~)~^+~}"
           incs))
+
+(defun get-value-from-child (xml name)
+  "Given an XML node, get the value of the named child."
+  (car (xmls:node-children
+         (xmls:xmlrep-find-child-tag name xml))))
+
+(defun get-value-from-attribute (xml name)
+  "Given an XML node, get the value of an attribute."
+  (xmls:xmlrep-attrib-value name xml))
+
 ;;;; MusicBrainz resource interface.
 
 (defun mb-browse (resource filter-resource mbid &key incs type status (page-offset 0))
