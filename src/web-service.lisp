@@ -38,7 +38,11 @@ Returns the same multiple values as drakma:http-request."
                          :stream *ws-stream*)))
 
 (defun ws-get-response (url parameters)
-  "Get the content of the response for the URL and parameters."
+  "Get the content of the response from the server."
+  (let ((delay (- (+ *last-request-time* *ws-delay*)
+                  (current-seconds))))
+    (when (plusp delay)
+      (sleep delay)))
   (multiple-value-bind (body status-code headers uri stream
                         must-close reason-phrase)
       (handler-case (ws-make-request url parameters)
@@ -56,11 +60,7 @@ Returns the same multiple values as drakma:http-request."
       (error (format nil "HTTP status ~A: ~A" status-code reason-phrase)))))
 
 (defun ws-request (url parameters)
-  "Talk to the web service."
-  (let ((delay (- (+ *last-request-time* *ws-delay*)
-                  (current-seconds))))
-    (when (plusp delay)
-      (sleep delay)))
+  "Obtain a parsed XML response for the given url and parameters."
   (anaphora:aif (xmls:parse (ws-get-response url parameters))
     (if (equal "metadata" (xmls:node-name anaphora:it))
       (car (xmls:xmlrep-children anaphora:it))
