@@ -22,14 +22,27 @@ function as their second value."
       (funcall mapping xml)
       (error "Cannot parse resource type ~A." resource))))
 
-(defmacro define-xml-resource-mapping (resource arg-forms)
-  "Add an XML to resource mapping for the resource.
+(defmacro define-resource (resource arg-forms)
+  "Define a resource structure, describe how to get its values, and export
+related symbols.
 
 Captures the variable xml inside the arg-forms."
-  `(setf (gethash ,resource *xml-resource-mappings*)
-         (lambda (xml)
-           (apply #',(symb 'make- resource)
-                  (collect-without-errors ,arg-forms)))))
+  `(progn
+     (defstruct ,resource
+       ,@(mapcar (lambda (arg-form)
+                   (list (car arg-form) nil))
+                 arg-forms))
+     (setf (gethash ,(keywordize resource) *xml-resource-mappings*)
+           (lambda (xml)
+             (apply #',(symb 'make- resource)
+                    (collect-without-errors
+                      ,(mapcar (lambda (arg-form)
+                                 (list (keywordize (car arg-form))
+                                       (cadr arg-form)))
+                               arg-forms)))))
+     (export ',(mapcar (lambda (arg-form)
+                         (symb resource "-" (car arg-form)))
+                       arg-forms))))
 
 ;;; All resources.
 
@@ -48,12 +61,6 @@ Captures the variable xml inside the arg-forms."
 
 ;;; Artist.
 
-(defstruct artist
-  (mbid nil)
-  (name nil)
-  (type nil)
-  (date-span (list nil nil)))
-
 (defun extract-artist-date-span (xml)
   (let ((span (xmls:xmlrep-find-child-tag "life-span" xml)))
     (mapcar
@@ -63,43 +70,29 @@ Captures the variable xml inside the arg-forms."
             (car (xmls:xmlrep-find-child-tags x span)))))
       '("begin" "end"))))
 
-(define-xml-resource-mapping
-  :artist
-  ((:mbid (get-value-from-attribute xml "id"))
-   (:name (get-value-from-child xml "name"))
-   (:type (get-value-from-attribute xml "type"))
-   (:date-span (extract-artist-date-span xml))))
+(define-resource
+  artist
+  ((mbid (get-value-from-attribute xml "id"))
+   (name (get-value-from-child xml "name"))
+   (type (get-value-from-attribute xml "type"))
+   (date-span (extract-artist-date-span xml))))
 
 ;;; Release.
 
-(defstruct release
-  (mbid nil)
-  (title nil)
-  (status nil)
-  (date nil)
-  (country nil))
-
-(define-xml-resource-mapping
-  :release
-  ((:mbid (get-value-from-attribute xml "id"))
-   (:title (get-value-from-child xml "title"))
-   (:status (get-value-from-child xml "status"))
-   (:date (get-value-from-child xml "date"))
-   (:country (get-value-from-child xml "country"))))
+(define-resource
+  release
+  ((mbid (get-value-from-attribute xml "id"))
+   (title (get-value-from-child xml "title"))
+   (status (get-value-from-child xml "status"))
+   (date (get-value-from-child xml "date"))
+   (country (get-value-from-child xml "country"))))
 
 ;;; Release group.
 
-(defstruct release-group
-  (mbid nil)
-  (title nil)
-  (type nil)
-  (first-release-date nil)
-  (primary-type nil))
-
-(define-xml-resource-mapping
-  :release-group
-  ((:mbid (get-value-from-attribute xml "id"))
-   (:title (get-value-from-child xml "title"))
-   (:type (get-value-from-attribute xml "type"))
-   (:first-release-date (get-value-from-child xml "first-release-date"))
-   (:primary-type (get-value-from-child xml "primary-type"))))
+(define-resource
+  release-group
+  ((mbid (get-value-from-attribute xml "id"))
+   (title (get-value-from-child xml "title"))
+   (type (get-value-from-attribute xml "type"))
+   (first-release-date (get-value-from-child xml "first-release-date"))
+   (primary-type (get-value-from-child xml "primary-type"))))

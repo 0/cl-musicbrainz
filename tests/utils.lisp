@@ -42,6 +42,13 @@
       (is (<= 0.1 diff))
       (is (> 0.2 diff)))))
 
+;;; keywordize
+
+(test test-keywordize
+  (is (eq ':|| (mb::keywordize '||)))
+  (is (eq :anything (mb::keywordize 'anything)))
+  (is (eq :|123| (mb::keywordize (mb::symb 123)))))
+
 ;;; mkstr
 
 (test test-mkstr

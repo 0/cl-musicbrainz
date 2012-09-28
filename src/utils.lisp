@@ -29,6 +29,10 @@ defaults should be used."
   (/ (get-internal-real-time)
      internal-time-units-per-second))
 
+(defun keywordize (sym)
+  "Returns the symbol with the same name in the keyword package."
+  (intern (symbol-name sym) 'keyword))
+
 (defun mkstr (&rest args)
   "princ all the arguments to a string."
   (with-output-to-string (s)
