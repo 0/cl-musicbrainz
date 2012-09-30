@@ -8,6 +8,7 @@
                         :components
                         ((:file "package")
                          (:file "utils")
+                         (:file "cache")
                          (:file "web-service")
                          (:file "resources")))))
 

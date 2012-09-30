@@ -60,12 +60,20 @@ Returns the same multiple values as drakma:http-request."
       (error (format nil "HTTP status ~A: ~A" status-code reason-phrase)))))
 
 (defun ws-request (url parameters)
-  "Obtain a parsed XML response for the given url and parameters."
-  (anaphora:aif (xmls:parse (ws-get-response url parameters))
-    (if (equal "metadata" (xmls:node-name anaphora:it))
-      (car (xmls:xmlrep-children anaphora:it))
-      (error "Response is not metadata."))
-    (error "Could not parse XML.")))
+  "Obtain a parsed XML response for the given url and parameters.
+
+If there is a cached response, that is used instead of asking the server. New
+responses are written to cache."
+  (let* ((cache-key (make-cache-key url parameters))
+         (response (getcache cache-key)))
+    (unless response
+      (setf response (ws-get-response url parameters)
+            (getcache cache-key) response))
+    (anaphora:aif (xmls:parse response)
+      (if (equal "metadata" (xmls:node-name anaphora:it))
+        (car (xmls:xmlrep-children anaphora:it))
+        (error "Response is not metadata."))
+      (error "Could not parse XML."))))
 
 (defun make-url (resource &optional mbid)
   "Generate the URL for a web service request."

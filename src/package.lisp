@@ -1,6 +1,7 @@
 (defpackage cl-musicbrainz
   (:use cl)
   (:export ;; Web service.
+           *cache-location*
            *user-agent*
            ;; Resources.
            browse-resource
